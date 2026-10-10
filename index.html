@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><title>Brawl Island</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -24,6 +24,26 @@ body.ingame #mm,body.ingame #hudTL,body.ingame #leave,body.ingame #hudmsg,body.i
 body.ingame #lobby{display:none}
 kbd{background:rgba(128,128,128,.35);padding:1px 6px;border-radius:4px;font-size:12px}
 #vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,30,.38) 100%)}
+/* ---- mobile / touch ---- */
+body{overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input{-webkit-user-select:text;user-select:text}.pn{touch-action:pan-y}
+#leave{z-index:6}
+#touch{display:none;position:absolute;inset:0;z-index:3;pointer-events:none}
+body.ingame.touch #touch{display:block}
+#tzR{position:absolute;right:0;top:0;width:58%;height:100%;pointer-events:auto;touch-action:none}
+#tzL{position:absolute;left:0;bottom:0;width:42%;height:65%;pointer-events:auto;touch-action:none}
+#joy{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:3px solid rgba(255,255,255,.45);background:rgba(255,255,255,.1);display:none;pointer-events:none}
+#joy i{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px;border-radius:50%;background:rgba(255,255,255,.55)}
+#tbtn{position:absolute;right:14px;bottom:14px;display:flex;flex-direction:row-reverse;flex-wrap:wrap-reverse;gap:10px;width:240px;align-items:flex-end;pointer-events:auto}
+.tb{width:62px;height:62px;border-radius:50%;padding:0;font-size:26px;background:rgba(30,30,100,.55);border:2px solid rgba(255,255,255,.6);touch-action:none;-webkit-tap-highlight-color:transparent}
+.tb.big{width:80px;height:80px;font-size:32px;background:rgba(255,120,30,.75)}.tb.sm{width:50px;height:50px;font-size:20px}
+.tb.on{filter:brightness(1.5)}
+#rot{display:none;position:absolute;top:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.65);padding:8px 14px;border-radius:20px;font-size:13px;z-index:6;animation:fade 6s forwards;pointer-events:none}
+@keyframes fade{70%{opacity:1}100%{opacity:0;visibility:hidden}}
+@media (orientation:portrait) and (pointer:coarse){body.ingame #rot{display:block}}
+@media (pointer:coarse){#hint{display:none!important}#mm{width:110px;height:110px}#leave{top:132px;padding:6px 10px;font-size:13px}#hudTL{width:min(240px,45vw)}}
+@media (max-height:500px){#logo,#news{display:none}.nv{width:62px;height:62px;font-size:11px}.nv i{font-size:22px}#play{font-size:24px;padding:8px}#battle{width:min(300px,45vw);bottom:10px}#navB{bottom:10px}#topL{padding:4px 14px 4px 4px}#avatar{width:38px;height:38px}
+ .pn{top:64px;right:14px;width:min(400px,50vw);max-height:calc(100vh - 80px)}#lobby.pnopen #battle{display:none}}
 /* ---- lobby (home screen) ---- */
 #lobby{position:fixed;inset:0;z-index:5;pointer-events:none;--bg:rgba(255,255,255,.1);--ink:#fff;--mut:#bccaf5;--line:rgba(255,255,255,.3);--acc:#ffb81c;--ok:#4cd27a}
 #lobby>*{pointer-events:auto}
@@ -67,6 +87,8 @@ kbd{background:rgba(128,128,128,.35);padding:1px 6px;border-radius:4px;font-size
  <div id="hudTL"><div class="hb"><b id="n1">You</b><div class="bar"><i id="h1"></i></div></div><span id="n2"></span></div>
  <button id="leave">⬅ Leave match</button>
  <div id="hudmsg"></div>
+ <div id="touch"><div id="tzR"></div><div id="tzL"></div><div id="joy"><i></i></div><div id="tbtn"></div></div>
+ <div id="rot">↻ Rotate your phone sideways for the best view</div>
  <div id="hint"><kbd>WASD</kbd>/<kbd>↑↓←→</kbd> move · <kbd>Shift</kbd> sprint · <kbd>Q</kbd><kbd>E</kbd>/drag look · <kbd>Space</kbd> jump · <kbd>L</kbd> block · <kbd>J</kbd> <kbd>K</kbd> attack + unlocked move keys</div>
 </div>
 <div id="lobby">
@@ -104,6 +126,7 @@ const MOVES={
 };
 let prof={trophies:0,wins:0,unlocked:["punch","kick"]},db=null,uid=null;
 const DEF={name:"Fighter",shirt:0x2f8fe0,skin:0xe0b08a,hair:0x2a1b12,style:0};const LK=()=>prof.look||(prof.look={...DEF});
+const TOUCH=(window.matchMedia&&matchMedia("(pointer:coarse)").matches)||"ontouchstart" in window,TJ={x:0,y:0,m:0};
 function load(){try{const s=JSON.parse(localStorage.getItem("kb_prof"));if(s)prof=s}catch(e){}ui()}
 async function save(){try{localStorage.setItem("kb_prof",JSON.stringify(prof))}catch(e){}
  try{if(db&&uid)await db.doc("data/users/"+uid+"/save/profile").set(prof)}catch(e){}ui()}
@@ -134,12 +157,12 @@ function pd(x,z){let m=99;for(const[a,b]of PATHS){const A=POI[a],B=POI[b],dx=B[1
 const obs=[];let sd=7;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647;
 const blockedAt=(x,z)=>obs.some(o=>Math.hypot(o.x-x,o.z-z)<o.r);
 function ctex(w,fn,rep){const c=document.createElement("canvas");c.width=c.height=w;fn(c.getContext("2d"),w);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rep,rep);t.anisotropy=4;return t}
-const R3=(()=>{try{const r=new THREE.WebGLRenderer({canvas:cv,antialias:true});r.setPixelRatio(Math.min(devicePixelRatio,1.75));r.setSize(800,450,false);
+const R3=(()=>{try{const r=new THREE.WebGLRenderer({canvas:cv,antialias:!TOUCH});r.setPixelRatio(Math.min(devicePixelRatio,TOUCH?1.25:1.75));r.setSize(800,450,false);
  r.shadowMap.enabled=true;r.shadowMap.type=THREE.PCFSoftShadowMap;r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1.1;
  const sc=new THREE.Scene();sc.fog=new THREE.Fog(0xc7dbf2,90,300);
  const cam=new THREE.PerspectiveCamera(65,800/450,.1,600),L=[.5,.62,.35];
  sc.add(new THREE.HemisphereLight(0xbcd6ff,0x6a5a40,.35));
- const sun=new THREE.DirectionalLight(0xfff0d8,2.1);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);const shc=sun.shadow.camera;shc.left=shc.bottom=-36;shc.right=shc.top=36;shc.near=1;shc.far=260;sun.shadow.bias=-.0005;sun.shadow.normalBias=.04;sc.add(sun,sun.target);
+ const sun=new THREE.DirectionalLight(0xfff0d8,2.1);sun.castShadow=true;sun.shadow.mapSize.set(TOUCH?1024:2048,TOUCH?1024:2048);const shc=sun.shadow.camera;shc.left=shc.bottom=-36;shc.right=shc.top=36;shc.near=1;shc.far=260;sun.shadow.bias=-.0005;sun.shadow.normalBias=.04;sc.add(sun,sun.target);
  const skyM=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,uniforms:{t:{value:0}},
   vertexShader:"varying vec3 p;void main(){p=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}",
   fragmentShader:`varying vec3 p;uniform float t;
@@ -213,7 +236,7 @@ void main(){vec2 uv=wp.xz/300.0+0.5;float h=texture2D(dm,vec2(uv.x,1.0-uv.y)).r*
   dm.position.set(x,h+.1,z);dm.scale.set(.5+rnd()*1.2,.3+rnd()*.6,.5+rnd()*1.2);dm.rotation.set(rnd(),rnd()*6,rnd());dm.updateMatrix();rk.setMatrixAt(nr++,dm.matrix)}
  rk.count=nr;
  const gm2=new THREE.MeshStandardMaterial({roughness:1});sway(gm2,.09,"(position.y+0.3)*1.6");const gr=inst(new THREE.ConeGeometry(.07,.55,3),gm2,2600,false);let ng=0;
- for(let i=0;i<5000&&ng<2600;i++){const a=rnd()*6.283,rr=Math.sqrt(rnd())*105,x=Math.cos(a)*rr,z=Math.sin(a)*rr,h=H(x,z);if(h<1.4||h>6||blockedAt(x,z)||pd(x,z)<1.8)continue;
+ for(let i=0;i<5000&&ng<(TOUCH?1000:2600);i++){const a=rnd()*6.283,rr=Math.sqrt(rnd())*105,x=Math.cos(a)*rr,z=Math.sin(a)*rr,h=H(x,z);if(h<1.4||h>6||blockedAt(x,z)||pd(x,z)<1.8)continue;
   ic.setHSL(.24+rnd()*.08,.55,.25+rnd()*.12);dm.rotation.set(0,0,0);put(gr,ng++,x,h+.2,z,.6+rnd()*.9,ic)}
  gr.count=ng;gr.instanceMatrix.needsUpdate=true;if(gr.instanceColor)gr.instanceColor.needsUpdate=true;
  const storm=new THREE.Mesh(new THREE.CylinderGeometry(1,1,120,48,1,true),new THREE.MeshBasicMaterial({color:0x8a3ffc,transparent:true,opacity:.28,side:2,depthWrite:false}));storm.position.y=40;sc.add(storm);
@@ -262,7 +285,7 @@ function update(dt){
  if(!mode)return;const m=me;rt+=dt;
  const cx=Math.cos(yaw),cz=Math.sin(yaw);
  if(!over&&m.hp>0&&m.stun<=0){
-  const f=(keys.w?1:0)-(keys.s?1:0),s=(keys.d?1:0)-(keys.a?1:0),dash=m.cur&&MOVES[m.cur].dash,sp=(m.cur&&!dash?0:4)*(keys.shift?1.7:1);
+  const f=clamp((keys.w?1:0)-(keys.s?1:0)-TJ.y,-1,1),s=clamp((keys.d?1:0)-(keys.a?1:0)+TJ.x,-1,1),dash=m.cur&&MOVES[m.cur].dash,sp=(m.cur&&!dash?0:4)*((keys.shift||TJ.m>.92)?1.7:1);
   const dx0=cx*f-cz*s,dz0=cz*f+cx*s,dl=Math.hypot(dx0,dz0)||1,sl=(H(m.x+dx0/dl*.6,m.z+dz0/dl*.6)-H(m.x,m.z))/.6,sf=clamp(1-sl*.7,.45,1.25),tx=dx0*sp*sf,tz=dz0*sp*sf,al=Math.min(1,dt*9);m.mx=(m.mx||0)+(tx-(m.mx||0))*al;m.mz=(m.mz||0)+(tz-(m.mz||0))*al;move(m,m.mx*dt,m.mz*dt);if(dash)move(m,cx*8*dt,cz*8*dt);
   if(keys[" "]&&m.y<=H(m.x,m.z)+.02)m.vy=7;m.blk=keys.l&&!m.cur?1:0}else{m.blk=0;m.mx=(m.mx||0)*.8;m.mz=(m.mz||0)*.8;move(m,m.mx*dt,m.mz*dt)}
  keys.q&&(yaw-=2*dt);keys.e&&(yaw+=2*dt);if(m.hp>0)m.ang=yaw;
@@ -480,7 +503,7 @@ function renderLook(){const L=LK(),pn=$("pname");if(document.activeElement!==pn)
  for(const key of["shirt","skin","hair"]){const el=$("sw-"+key);el.innerHTML="";
   OPT[key].forEach(c=>{const b=document.createElement("button");b.className="sw"+(L[key]===c?" on":"");b.style.background=hex(c);b.onclick=()=>{L[key]=c;save()};el.appendChild(b)})}
  const st=$("sw-style");st.innerHTML="";OPT.style.forEach((n,i)=>{const b=document.createElement("button");b.className="chip"+(L.style===i?" on":"");b.textContent=n;b.onclick=()=>{L.style=i;save()};st.appendChild(b)});
- $("avatar").style.background=hex(L.shirt);$("avatar").textContent=(L.name||"F")[0].toUpperCase();$("pnm").textContent=L.name||"Fighter";$("lvl").textContent="Lv. "+(1+prof.wins)}
+ $("avatar").style.background=hex(L.shirt);$("avatar").textContent=(L.name||"F")[0].toUpperCase();$("pnm").textContent=L.name||"Fighter";$("lvl").textContent="Lv. "+(1+prof.wins);renderTouch()}
 function renderModes(){const M=$("modes");M.innerHTML="";
  MODES.forEach(([id,n,d])=>{const b=document.createElement("button");b.className="mode"+(sel===id?" on":"");b.innerHTML=`${n}<small>${d}</small>`;b.onclick=()=>{sel=id;renderModes();openPn(null)};M.appendChild(b)});
  $("modeName").textContent=MODES.find(m=>m[0]===sel)[1];$("codeRow").style.display=sel==="online"?"flex":"none"}
@@ -489,15 +512,30 @@ $("rand").onclick=()=>{const L=LK(),pk=a=>a[Math.random()*a.length|0];L.shirt=pk
 const stage=$("stage");
 function enterGame(){document.body.classList.add("ingame");sfx("amb");stage.classList.add("full");$("hudmsg").appendChild($("msg"));
  try{const rf=stage.requestFullscreen||stage.webkitRequestFullscreen;if(rf){const p=rf.call(stage);p&&p.catch&&p.catch(()=>{})}}catch(e){}}
-function exitGame(){document.body.classList.remove("ingame");stage.classList.remove("full");$("msgslot").appendChild($("msg"));
+function exitGame(){document.body.classList.remove("ingame");jreset();keys.l=0;keys[" "]=0;stage.classList.remove("full");$("msgslot").appendChild($("msg"));
  try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}
 $("play").onclick=async()=>{if(document.activeElement)document.activeElement.blur();
  if(sel==="online"){const code=$("code").value.trim();if(!code){$("msg").textContent="Enter a match code first (share it with friends).";return}
   CFG={bots:0,storm:1};enterGame();const ok=await startOnline();if(ok===false)exitGame();return}
  CFG=sel==="duel"?{bots:1,storm:0}:{bots:7,storm:1};enterGame();startBot()};
-function openPn(id){const el=id&&$(id),was=el&&el.classList.contains("open");["pnF","pnM","pnMode"].forEach(q=>$(q).classList.remove("open"));if(el&&!was)el.classList.add("open")}
+function openPn(id){const el=id&&$(id),was=el&&el.classList.contains("open");["pnF","pnM","pnMode"].forEach(q=>$(q).classList.remove("open"));if(el&&!was)el.classList.add("open");$("lobby").classList.toggle("pnopen",!!(el&&!was))}
 $("nF").onclick=()=>openPn("pnF");$("nM").onclick=()=>openPn("pnM");$("modeChip").onclick=()=>openPn("pnMode");
 $("news2").onclick=()=>{sel="online";renderModes();openPn("pnMode")};document.querySelectorAll(".pnx").forEach(b=>b.onclick=()=>openPn(null));
+// ---- touch controls ----
+const tzL=$("tzL"),tzR=$("tzR"),joy=$("joy");let jid=null,jo=null,lid=null,lp=null;
+function jreset(){jid=null;TJ.x=TJ.y=TJ.m=0;joy.style.display="none"}
+tzL.addEventListener("pointerdown",e=>{e.preventDefault();jid=e.pointerId;jo={x:e.clientX,y:e.clientY};tzL.setPointerCapture(e.pointerId);joy.style.left=e.clientX+"px";joy.style.top=e.clientY+"px";joy.style.display="block";joy.firstElementChild.style.transform="translate(0,0)"});
+tzL.addEventListener("pointermove",e=>{if(e.pointerId!==jid)return;let dx=e.clientX-jo.x,dy=e.clientY-jo.y;const R=55,l=Math.hypot(dx,dy)||1,c=Math.min(l,R);dx=dx/l*c;dy=dy/l*c;TJ.x=dx/R;TJ.y=dy/R;TJ.m=c/R;joy.firstElementChild.style.transform=`translate(${dx}px,${dy}px)`});
+["pointerup","pointercancel"].forEach(t=>tzL.addEventListener(t,e=>{if(e.pointerId===jid)jreset()}));
+tzR.addEventListener("pointerdown",e=>{e.preventDefault();lid=e.pointerId;lp={x:e.clientX,y:e.clientY};tzR.setPointerCapture(e.pointerId)});
+tzR.addEventListener("pointermove",e=>{if(e.pointerId!==lid)return;yaw+=(e.clientX-lp.x)*.008;pitch=clamp(pitch+(e.clientY-lp.y)*.005,.1,.9);lp={x:e.clientX,y:e.clientY}});
+["pointerup","pointercancel"].forEach(t=>tzR.addEventListener(t,e=>{if(e.pointerId===lid)lid=null}));
+function renderTouch(){const B=$("tbtn");if(!B)return;B.innerHTML="";
+ const mk=(txt,cls,down,up)=>{const b=document.createElement("button");b.className="tb "+cls;b.textContent=txt;b.addEventListener("pointerdown",e=>{e.preventDefault();b.classList.add("on");down()});
+  ["pointerup","pointercancel","pointerleave"].forEach(t=>b.addEventListener(t,()=>{b.classList.remove("on");if(up)up()}));B.appendChild(b)};
+ mk("👊","big",()=>tryAtk("j"));mk("🦶","",()=>tryAtk("k"));mk("🛡️","",()=>{keys.l=1},()=>{keys.l=0});mk("⤴️","",()=>{keys[" "]=1},()=>{keys[" "]=0});
+ const em={uppercut:"⬆️",fireball:"🔥",sweep:"🌀",dash:"💨"};
+ for(const id of prof.unlocked)if(em[id])mk(em[id],"sm",()=>tryAtk(MOVES[id].k))}
+if(TOUCH)document.body.classList.add("touch");
 var LOOKREADY=1;renderLook();renderModes();
 </script></body></html>
-
