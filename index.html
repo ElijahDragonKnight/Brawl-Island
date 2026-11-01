@@ -166,7 +166,7 @@ const SKIN=[0xf6d5b8,0xf1c27d,0xe0b08a,0xc68642,0xa86a3a,0x8d5524,0x6b3f22,0x4a2
  HAIRC=[0x111111,0x2a1b12,0x4a2f1b,0x6b4423,0xb08d57,0xe6c86e,0xd8d8d8,0xc0392b,0x2f8fe0,0x8e44ad,0x27ae60,0xe84393],
  EYEC=[0x3a2a1a,0x2e6fa8,0x3f7a4a,0x7a5a2a,0x6a6a6a,0x7a3fa0],
  CLOTH=[0x2f8fe0,0xd9481c,0x8e44ad,0x16a085,0xc0392b,0xf39c12,0x2c3e50,0xe84393,0xf1f1f1,0x27ae60,0x111111,0xffd23a,0x7f8c8d,0x5b3a29],
- HAIRS=["Short","Bald","Long","Buzz","Afro","Mohawk","Ponytail","Spiky"],BEARD=["None","Stubble","Beard","Moustache"],TOPS=["T-shirt","Tank","Long sleeve","Hoodie"],
+ HAIRS=["Short","Bald","Long","Buzz","Afro","Mohawk","Ponytail","Spiky","Curly"],BEARD=["None","Stubble","Beard","Moustache"],TOPS=["T-shirt","Tank","Long sleeve","Hoodie"],
  BOTTOMS=["Jeans","Shorts","Joggers"],SHOES=["Sneakers","Boots"],HATS=["None","Cap","Beanie","Headband"],GLASS=["None","Shades","Round"],EMOTES=["wave","flex","dance"];
 const DEF={name:"Fighter",skin:0xe0b08a,build:1,height:1,freckles:0,hairStyle:0,hair:0x2a1b12,eyes:0,beard:0,top:0,shirt:0x2f8fe0,bottom:0,pants:0x2b3550,shoe:0,shoeC:0xf2f2f2,hat:0,hatC:0xd9481c,glasses:0,band:0,chain:0,emote:0};
 let prof={trophies:0,wins:0,unlocked:["punch","kick"],equip:[null,null]},db=null,uid=null;
@@ -204,8 +204,16 @@ const blockedAt=(x,z,r)=>blockedStatic(x,z,r)||carBlock(x,z,r==null?.38:r);
 function wepMesh(id){const g=new THREE.Group(),mt=(c,r,m)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m||0}),a=(geo,m,x,y,z,rz)=>{const q=new THREE.Mesh(geo,m);q.position.set(x,y,z);if(rz)q.rotation.z=rz;q.castShadow=true;g.add(q);return q};
  if(id==="bat"){a(new THREE.CylinderGeometry(.03,.025,.3,10),mt(0x222222,.8),0,.1,0);a(new THREE.CylinderGeometry(.055,.03,.6,10),mt(0xb07a3c,.6),0,.55,0);a(new THREE.SphereGeometry(.057,10,8),mt(0xb07a3c,.6),0,.85,0)}
  else if(id==="sword"){a(new THREE.CylinderGeometry(.025,.025,.22,8),mt(0x3a2a1a,.8),0,.05,0);a(new THREE.BoxGeometry(.28,.04,.06),mt(0xc9a227,.3,.8),0,.17,0);a(new THREE.BoxGeometry(.07,.8,.012),mt(0xdfe6ee,.2,.9),0,.6,0)}
- else if(id==="pistol"){a(new THREE.BoxGeometry(.07,.28,.05),mt(0x2a2a2e,.4,.6),0,.1,0);a(new THREE.BoxGeometry(.055,.14,.045),mt(0x1a1a1c,.7),0,-.04,0,-.2)}
- else{a(new THREE.BoxGeometry(.08,.7,.07),mt(0x2a2a2e,.4,.6),0,.25,0);a(new THREE.BoxGeometry(.06,.18,.05),mt(0x1a1a1c,.7),0,-.1,0);a(new THREE.BoxGeometry(.06,.22,.05),mt(0x3a3a3e,.5,.5),0,.04,0)}
+ else if(id==="pistol"){const gm=mt(0x2b2d33,.3,.75),pl=mt(0x17181a,.8),ac=mt(0xff9a1f,.5);
+  a(new THREE.BoxGeometry(.046,.14,.062),pl,-.012,-.03,0,-.22);a(new THREE.BoxGeometry(.052,.1,.066),gm,0,.06,0);a(new THREE.BoxGeometry(.058,.28,.07),gm,.004,.2,0);
+  a(new THREE.CylinderGeometry(.011,.011,.07,10),gm,0,.37,0);a(new THREE.BoxGeometry(.014,.018,.012),gm,.036,.33,0);a(new THREE.BoxGeometry(.014,.018,.03),gm,.036,.075,0);
+  a(new THREE.BoxGeometry(.06,.016,.072),ac,.004,.12,0);a(new THREE.BoxGeometry(.044,.014,.05),pl,-.04,-.1,0,-.22)}
+ else{const gm=mt(0x2b2d33,.3,.75),pl=mt(0x17181a,.8),ac=mt(0xe0403a,.5),gl=mt(0x6ac0ff,.1,.5);
+  a(new THREE.BoxGeometry(.06,.3,.075),pl,-.01,-.26,0);a(new THREE.BoxGeometry(.04,.06,.082),pl,-.01,-.42,0);a(new THREE.BoxGeometry(.078,.34,.09),gm,0,.04,0);
+  a(new THREE.BoxGeometry(.05,.14,.08),pl,-.045,-.06,0,-.2);a(new THREE.BoxGeometry(.055,.2,.065),pl,-.05,.1,0,.12);a(new THREE.BoxGeometry(.07,.32,.08),pl,0,.38,0);
+  a(new THREE.CylinderGeometry(.013,.013,.36,10),gm,0,.74,0);a(new THREE.CylinderGeometry(.022,.022,.07,10),gm,0,.93,0);
+  a(new THREE.CylinderGeometry(.028,.028,.2,12),pl,.07,.1,0);a(new THREE.CylinderGeometry(.033,.033,.03,12),gl,.07,.21,0);a(new THREE.BoxGeometry(.012,.03,.03),gm,.045,.1,0);
+  a(new THREE.BoxGeometry(.08,.02,.092),ac,0,.2,0)}
  return g}
 function carMesh(col){const g=new THREE.Group(),body=new THREE.MeshStandardMaterial({color:col,roughness:.35,metalness:.6}),glass=new THREE.MeshStandardMaterial({color:0x1a2a3a,roughness:.1,metalness:.7}),dark=new THREE.MeshStandardMaterial({color:0x151515,roughness:.9}),
   add=(geo,m,x,y,z)=>{const q=new THREE.Mesh(geo,m);q.position.set(x,y,z);q.castShadow=true;g.add(q);return q};
@@ -494,14 +502,14 @@ function faceTex(skin,hair,iris,beard,frk){const key=[skin,hair,iris,beard,frk].
  const t=new THREE.CanvasTexture(c);t.anisotropy=4;FT[key]=t;return t}
 function build(col,k){
  const L=k===0?LK():null;
- const D=L||{skin:[0xe0b08a,0xc68642,0x8d5524,0xf1c27d][k%4],hair:[0x2a1b12,0x111111,0x6b4423,0xb08d57][(k*3)%4],hairStyle:k%5===0?2:k%7===0?1:k%6===0?4:0,eyes:(k+1)%6,beard:k%5===3?2:k%3===0?1:0,freckles:k%4===1?1:0,
+ const D=L||{skin:[0xe0b08a,0xc68642,0x8d5524,0xf1c27d][k%4],hair:[0x2a1b12,0x111111,0x6b4423,0xb08d57][(k*3)%4],hairStyle:k%5===0?2:k%7===0?1:k%6===0?4:k%4===0?8:0,eyes:(k+1)%6,beard:k%5===3?2:k%3===0?1:0,freckles:k%4===1?1:0,
   top:k%4===3?3:k%3===0?1:k%5===0?2:0,shirt:col,bottom:k%3===1?1:k%4===2?2:0,pants:[0x2b3550,0x2b2f3a,0x3a3a3a,0x4a3b2c][k%4],shoe:k%6===5?1:0,shoeC:k%2?0xf2f2f2:0x222222,hat:k%8===6?1:k%9===4?2:0,hatC:col,glasses:k%7===2?1:0,band:k%2,chain:k%5===4?1:0,build:1,height:1};
  const hs=D.hairStyle,iris=EYEC[D.eyes]||EYEC[0];
  const fab=(c,r)=>new THREE.MeshStandardMaterial({color:c,roughness:r||.88});
  const SH=fab(D.shirt),SK=new THREE.MeshPhysicalMaterial({color:D.skin,roughness:.5,clearcoat:.12,clearcoatRoughness:.55}),
   HM=new THREE.MeshPhysicalMaterial({map:faceTex(D.skin,D.hair,iris,D.beard,D.freckles),roughness:.5,clearcoat:.12,clearcoatRoughness:.55}),
   PN=new THREE.MeshStandardMaterial({color:D.pants,roughness:.85}),SN=new THREE.MeshStandardMaterial({color:D.shoeC,roughness:.55}),SL=new THREE.MeshStandardMaterial({color:0xe8e8e8,roughness:.8}),
-  SO=new THREE.MeshStandardMaterial({color:0x222222,roughness:.9}),GD=new THREE.MeshStandardMaterial({color:0xc9a227,roughness:.3,metalness:.8}),HR=new THREE.MeshStandardMaterial({color:D.hair,roughness:.55}),
+  SO=new THREE.MeshStandardMaterial({color:0x222222,roughness:.9}),GD=new THREE.MeshStandardMaterial({color:0xc9a227,roughness:.3,metalness:.8}),HR=new THREE.MeshStandardMaterial({color:D.hair,roughness:.95}),
   HT=fab(D.hatC,.85),GL=new THREE.MeshStandardMaterial({color:0x111418,roughness:.1,metalness:.6}),GLS=new THREE.MeshPhysicalMaterial({color:0xffffff,transparent:true,opacity:.2,roughness:.02,clearcoat:1,clearcoatRoughness:.02});
  const M=(g,m,x,y,z,sx,sy,sz)=>{const q=new THREE.Mesh(g,m);q.position.set(x||0,y||0,z||0);if(sx)q.scale.set(sx,sy||sx,sz||sx);return q};
  const o=new THREE.Group(),i=new THREE.Group();o.add(i);
@@ -523,25 +531,32 @@ function build(col,k){
  for(const z of[-.158,.158])hd.add(M(new THREE.SphereGeometry(.034,10,8),SK,-.005,.145,z,.55,1,.8));
  for(const z of[-.062,.062])hd.add(M(new THREE.SphereGeometry(.02,12,10),GLS,.148,.18,z,.35,1,1.5));
  // hair
- const cap=(r,th,y)=>{const hc=M(new THREE.SphereGeometry(r,28,16,0,6.283,0,th),HR,-.012,y||.178,0,1,1.17,1);hc.rotation.z=.2;hd.add(hc)};
- if(hs===0||hs===2||hs===6)cap(.17,1.6);
- if(hs===3)cap(.163,1.45);
+ const hatOn=D.hat===1||D.hat===2,cap=(r,th,y)=>{const hc=M(new THREE.SphereGeometry(r,28,16,0,6.283,0,th),HR,-.012,y||.178,0,1,1.17,1);hc.rotation.z=.2;hd.add(hc)};
+ if(!hatOn){
+  if(hs===0||hs===2||hs===6)cap(.17,1.6);
+  if(hs===3)cap(.163,1.45);
+  if(hs===4)hd.add(M(new THREE.SphereGeometry(.205,24,16,0,6.283,0,2.1),HR,-.065,.27,0,1,1,1.05));
+  if(hs===5){cap(.163,1.45);for(let n=0;n<7;n++)hd.add(M(new THREE.SphereGeometry(.05,10,8),HR,.1-n*.035,.33-Math.abs(n-3)*.012,0,1,1.5,.4))}
+  if(hs===7){cap(.163,1.45);for(let n=0;n<12;n++){const a=n*.52,th=.25+(n%3)*.28,q=M(new THREE.ConeGeometry(.032,.13,5),HR,Math.sin(th)*Math.cos(a)*.17-.01,.18+Math.cos(th)*.21,Math.sin(th)*Math.sin(a)*.17);q.rotation.z=-Math.sin(th)*Math.cos(a)*.9;q.rotation.x=Math.sin(th)*Math.sin(a)*.9;hd.add(q)}}
+  if(hs===8){cap(.168,1.5);const n=80,im=new THREE.InstancedMesh(new THREE.SphereGeometry(.034,8,6),HR,n),du=new THREE.Object3D();let cnt=0;
+   for(let q=0;q<n*4&&cnt<n;q++){const th=Math.random()*1.5,ph=Math.random()*6.283,nx=Math.sin(th)*Math.cos(ph),ny=Math.cos(th),nz=Math.sin(th)*Math.sin(ph);if(nx>.4&&ny<.85)continue;
+    du.position.set(nx*.18-.012,.18+ny*.21,nz*.18);du.scale.setScalar(.8+Math.random()*.5);du.updateMatrix();im.setMatrixAt(cnt++,du.matrix)}
+   im.count=cnt;im.castShadow=true;hd.add(im)}
+ }
  if(hs===2)hd.add(M(new THREE.SphereGeometry(.15,14,10),HR,-.1,.02,0,.55,1.9,1.05));
- if(hs===4)hd.add(M(new THREE.SphereGeometry(.235,20,14),HR,-.02,.25,0,1,1,1.05));
- if(hs===5){cap(.163,1.45);for(let n=0;n<7;n++)hd.add(M(new THREE.SphereGeometry(.05,10,8),HR,.1-n*.035,.33-Math.abs(n-3)*.012,0,1,1.5,.4))}
- if(hs===6){for(const[x,y,r]of[[-.19,.2,.045],[-.24,.1,.04],[-.26,-.02,.035],[-.26,-.12,.03]])hd.add(M(new THREE.SphereGeometry(r,10,8),HR,x,y,0))}
- if(hs===7){cap(.163,1.45);for(let n=0;n<12;n++){const a=n*.52,th=.25+(n%3)*.28,q=M(new THREE.ConeGeometry(.032,.13,5),HR,Math.sin(th)*Math.cos(a)*.17-.01,.18+Math.cos(th)*.21,Math.sin(th)*Math.sin(a)*.17);q.rotation.z=-Math.sin(th)*Math.cos(a)*.9;q.rotation.x=Math.sin(th)*Math.sin(a)*.9;hd.add(q)}}
-  // headwear + glasses
- if(D.hat===1){const dome=M(new THREE.SphereGeometry(.178,24,12,0,6.283,0,1.45),HT,-.01,.2,0);hd.add(dome);const brim=M(new THREE.CylinderGeometry(.17,.17,.012,20,1,false,0,Math.PI),HT,.08,.195,0,1.35,1,1);hd.add(brim)}
- if(D.hat===2){hd.add(M(new THREE.SphereGeometry(.18,24,16,0,6.283,0,1.7),HT,-.01,.19,0));const rm2=M(new THREE.TorusGeometry(.172,.02,8,24),HT,-.01,.13,0);rm2.rotation.x=Math.PI/2;hd.add(rm2)}
- if(D.hat===3){const hb=M(new THREE.TorusGeometry(.168,.014,8,28),HT,-.01,.215,0);hb.rotation.x=Math.PI/2;hb.rotation.y=.15;hd.add(hb)}
+ if(hs===6)for(const[x,y,r]of[[-.15,.22,.05],[-.2,.17,.048],[-.23,.1,.044],[-.235,.02,.04],[-.225,-.07,.035],[-.2,-.15,.03]])hd.add(M(new THREE.SphereGeometry(r,12,10),HR,x,y,0));
+ // headwear + glasses
+ if(D.hat===1){hd.add(M(new THREE.SphereGeometry(.172,28,16,0,6.283,0,1.15),HT,-.01,.185,0));
+  const brim=M(new THREE.CylinderGeometry(.2,.2,.012,26,1,false,0,Math.PI),HT,.015,.252,0);brim.rotation.z=-.12;hd.add(brim);hd.add(M(new THREE.SphereGeometry(.014,8,6),HT,-.01,.357,0))}
+ if(D.hat===2){hd.add(M(new THREE.SphereGeometry(.178,26,16,0,6.283,0,1.2),HT,-.01,.2,0));hd.add(M(new THREE.CylinderGeometry(.168,.168,.03,26),HT,-.01,.262,0));hd.add(M(new THREE.SphereGeometry(.03,10,8),HT,-.01,.375,0))}
+ if(D.hat===3){const hb=M(new THREE.TorusGeometry(.14,.013,8,28),HT,-.005,.27,0);hb.rotation.x=Math.PI/2;hd.add(hb)}
  if(D.glasses===1){for(const z of[-.062,.062])hd.add(M(new THREE.BoxGeometry(.012,.034,.058),GL,.157,.18,z));hd.add(M(new THREE.BoxGeometry(.012,.01,.03),GL,.157,.185,0));for(const z of[-.115,.115])hd.add(M(new THREE.BoxGeometry(.1,.008,.008),GL,.1,.185,z))}
  if(D.glasses===2){for(const z of[-.062,.062]){const r=M(new THREE.TorusGeometry(.028,.004,6,18),GD,.157,.18,z);r.rotation.y=Math.PI/2;hd.add(r)}hd.add(M(new THREE.BoxGeometry(.008,.006,.036),GD,.158,.186,0))}
  // arms
  const V3=a=>new THREE.Vector3(a[0],a[1],a[2]);
  const seg=(a,b,r)=>{const A=V3(a),B=V3(b),d=B.clone().sub(A),q=new THREE.Mesh(new THREE.CylinderGeometry(r,r,d.length(),10),SK);q.position.copy(A).add(B).multiplyScalar(.5);q.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.clone().normalize());return q};
  const ball=(a,r,sx,sy,sz)=>{const q=new THREE.Mesh(new THREE.SphereGeometry(r,12,10),SK);q.position.set(a[0],a[1],a[2]);if(sx)q.scale.set(sx,sy,sz);return q};
- const fist=s=>{const g=new THREE.Group(),h=new THREE.Group(),T=-s;g.add(h);g.position.y=-.28;g.scale.setScalar(.92);
+ const fist=s=>{const g=new THREE.Group(),h=new THREE.Group(),T=-s;g.add(h);g.position.y=-.28;g.scale.setScalar(.92);g.rotation.y=-s*Math.PI/2;
   h.add(ball([.004,-.052,0],.05,.38,1,.88));
   const FX=[[.021,-.088],[.023,-.091],[.021,-.088],[.017,-.082]],FR=[.0098,.0102,.0098,.009];
   for(let n=0;n<4;n++){const z=s*(-.0315+.021*n),xm=FX[n][0],ym=FX[n][1],r=FR[n],M0=[xm,ym,z],P1=[xm-.034,ym-.006,z];
@@ -567,7 +582,7 @@ function build(col,k){
   kn.add(M(new THREE.SphereGeometry(.054,12,8),sh?SK:PN),M(lathe([[.052,0],[.056,-.07],[.05,-.2],[.039,-.33],[.036,-.4]],14),sh?SK:PN));
   if(D.bottom===2)kn.add(M(new THREE.CylinderGeometry(.045,.045,.05,12),SL,0,-.37,0));
   if(D.shoe===0)kn.add(M(new THREE.CylinderGeometry(.034,.037,.07,10),SL,0,-.4,0),M(new THREE.SphereGeometry(.06,14,10),SN,.065,-.445,0,1.9,.6,.85),M(new THREE.BoxGeometry(.26,.03,.085),SL,.07,-.47,0));
-  else kn.add(M(new THREE.CylinderGeometry(.05,.052,.17,12),SN,0,-.36,0),M(new THREE.SphereGeometry(.055,12,10),SN,.06,-.445,0,1.9,.65,.9),M(new THREE.BoxGeometry(.27,.045,.09),SO,.07,-.465,0));
+  else kn.add(M(new THREE.CylinderGeometry(.049,.057,.2,14),SN,0,-.34,0),M(new THREE.CylinderGeometry(.058,.058,.022,14),SN,0,-.245,0),M(new THREE.BoxGeometry(.2,.075,.088),SN,.06,-.425,0),M(new THREE.SphereGeometry(.05,12,10),SN,.17,-.43,0,1.2,.78,.95),M(new THREE.BoxGeometry(.3,.026,.092),SO,.09,-.467,0),M(new THREE.BoxGeometry(.07,.03,.088),SO,-.03,-.475,0));
   i.add(p);return[p,kn]};
  const[la,la2]=arm(.24),[ra,ra2]=arm(-.24),[ll,ll2]=leg(.085),[rl,rl2]=leg(-.085);
  const shd=new THREE.Mesh(new THREE.BoxGeometry(.05,1.1,.8),new THREE.MeshBasicMaterial({color:0x4aa3ff,transparent:true,opacity:.4}));shd.position.set(.5,1.2,0);shd.visible=false;i.add(shd);
@@ -598,8 +613,8 @@ function pose(F,f,dt,isMe){
  const air=f!==SHOW&&!f.swim&&f.y-H(f.x,f.z)>.2;if(F.air&&!air&&!f.swim)F.land=.3;F.air=air;F.land=Math.max(0,F.land-dt);
  const k=Math.min(1,F.sp*.3),run=Math.min(1,F.sp/5.5),g=1-k,w=Math.sin(F.ph)*.9*k,ls=F.land/.3,L=(a,b,t)=>a+(b-a)*t,cs=Math.cos(F.ph),sn=Math.sin(F.ph);
  F.o.position.set(f.x,f.y,f.z);let da=-f.ang-F.ry;da=Math.atan2(Math.sin(da),Math.cos(da));F.ry+=da*Math.min(1,dt*14);F.o.rotation.y=F.ry+(c==="spin"?pr*6.283:0);
- const J={ll:w,rl:-w,ll2:-Math.max(0,cs)*.9*k,rl2:-Math.max(0,-cs)*.9*k,la:L(-w*.8,.55,g),ra:L(w*.8,.45,g),la2:L(.4+.5*run,1.7,g),ra2:L(.4+.5*run,1.7,g),ix:-.08*k-.12*run,iy:Math.sin(T*.5+F.id)*.05*g,
-  ipy:Math.sin(T*2.2+F.ph)*.012+(k>.2?Math.abs(sn)*.03:0)-.1*ls,ipx:0,hz:0,hy:Math.sin(T*.7+F.id)*.3*g};
+ const J={ll:w+.3*g,rl:-w-.3*g,ll2:-Math.max(0,cs)*.9*k-.25*g,rl2:-Math.max(0,-cs)*.9*k-.25*g,la:L(-w*.8,.55,g),ra:L(w*.8,1.25,g),la2:L(.4+.5*run,2.5,g),ra2:L(.4+.5*run,.65,g),ix:-.08*k-.12*run-.08*g,iy:Math.sin(T*.5+F.id)*.05*g-.2*g,
+  ipy:Math.sin(T*2.2+F.ph)*.012+(k>.2?Math.abs(sn)*.03:0)-.1*ls-.1*g,ipx:0,hz:0,hy:Math.sin(T*.7+F.id)*.3*g};
  if(ls>0){J.ll2-=.9*ls;J.rl2-=.9*ls;J.ll+=.5*ls;J.rl+=.5*ls}
  if(air){const up=f.vy>0;J.ll=.5;J.rl=-.3;J.ll2=-.9;J.rl2=-.5;J.la=J.ra=up?2.2:1;J.la2=J.ra2=.6;J.ix=-.12}
  const W=f.wep&&WEAPONS[f.wep];
