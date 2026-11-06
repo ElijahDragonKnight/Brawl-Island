@@ -445,9 +445,11 @@ function newRound(){const[x,z]=SP();me=mkF(x,z);me.ang=yaw;me.mat=100;proj=[];ov
 function endMatch(you,pts){if(over)return;over=1;if(me.car)exitCar();me.cur=null;
  if(you){prof.trophies+=pts;prof.wins++;earned+=pts;save();me.emote="flex"}
  $("resT").textContent=you?"VICTORY ROYALE!":"ELIMINATED";$("resD").innerHTML=`Eliminations: <b>${me.kills}</b><br>Trophies earned: <b>+${earned}</b> 🏆`;$("res").style.display="flex"}
+function stormRadius(t){const n=Math.floor(t/60),w=t-n*60,tgt=Math.max(8,140-25*n);if(n<1||w>=4)return tgt;const prev=Math.max(8,140-25*(n-1)),k=w/4;return prev+(tgt-prev)*k*k*(3-2*k)}
+function stormInfo(){const n=Math.floor(rt/60),w=rt-n*60;return n>=1&&w<4?" · ⚠ STORM SHRINKING! "+Math.round(stR)+"m":" · Storm "+Math.round(stR)+"m"+(stR>8?" (−25 m in "+Math.ceil(60-w)+"s)":"")}
 function hud(m){let loc="Wilderness",ld=28;for(const[n,x,z]of POI){const d=Math.hypot(x-m.x,z-m.z);if(d<ld){ld=d;loc=n}}
  $("h1").style.width=m.hp+"%";$("o2w").style.display=(m.swim||m.o2<99)?"flex":"none";$("o2").style.width=m.o2+"%";
- $("n2").textContent=`📍 ${loc} · Alive ${bots.filter(b=>b.hp>0).length+[...remotes.values()].filter(f=>f.hp>0).length+(m.hp>0?1:0)}${CFG.storm?" · Storm circle "+Math.round(stR)+"m":""}`;
+ $("n2").textContent=`📍 ${loc} · Alive ${bots.filter(b=>b.hp>0).length+[...remotes.values()].filter(f=>f.hp>0).length+(m.hp>0?1:0)}${CFG.storm?stormInfo():""}`;
  const out=CFG.storm&&m.hp>0&&!over&&Math.hypot(m.x,m.z)>stR;
  $("stormw").style.display=out?"block":"none";$("stormfx").style.display=out?"block":"none";if(out)$("stormw").textContent=`☠ OUTSIDE THE STORM — ${Math.ceil(m.hp/20)}s TO LIVE`;
  const e=prof.equip;$("hudMoves").textContent=TOUCH?"":`[J] Punch · [K] Kick`+(e[0]?` · [I] ${MOVES[e[0]].n}`:"")+(e[1]?` · [U] ${MOVES[e[1]].n}`:"")+" · [Z] Wall [X] Floor [C] Ramp · [T] Emote";
@@ -481,8 +483,7 @@ function update(dt){
  for(let i=0;i<all.length;i++)for(let j=i+1;j<all.length;j++){const a=all[i],b=all[j];if(a.hp<=0||b.hp<=0||(a.remote&&b.remote)||(m.car&&(a===m||b===m))||a.drop||b.drop||a.dropT>0||b.dropT>0)continue;const d=dist(a,b);
   if(d<.75&&d>.001){const p=(.75-d)/2,nx=(a.x-b.x)/d,nz=(a.z-b.z)/d,k=(a.remote||b.remote)?2:1;if(!a.remote)move(a,nx*p*k,nz*p*k);if(!b.remote)move(b,-nx*p*k,-nz*p*k)}}
  // storm: outside the circle = 20 hp/s (5 seconds to live)
- const T0=Math.max(0,rt-30),i=Math.floor(T0/35),w=T0%35,SR=[140,85,50,24,8];
- stR=!CFG.storm?999:i>=4?8:w<20?SR[i]:SR[i]+(SR[i+1]-SR[i])*((w-20)/15);
+ stR=CFG.storm?stormRadius(rt):999;if(CFG.storm&&Math.floor(rt/60)>Math.floor((rt-dt)/60)&&rt>=60)$("msg").textContent="⚠ The storm is closing in! The safe circle shrinks by 25 m.";
  for(const f of[m,...bots])if(f.hp>0&&Math.hypot(f.x,f.z)>stR){f.hp=Math.max(0,f.hp-20*dt);f.lastBy=null}
  // oxygen
  if(m.hp>0){if(m.swim){m.o2=Math.max(0,m.o2-100/15*dt);if(m.o2<=0){m.hp=Math.max(0,m.hp-10*dt);m.lastBy=null}}else m.o2=Math.min(100,m.o2+45*dt)}
@@ -797,7 +798,7 @@ function exitGame(){clearKeys();document.body.classList.remove("ingame");stage.c
  try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}
 // ---- lobby UI ----
 const hex=c=>"#"+c.toString(16).padStart(6,"0");
-const MODES=[["br","Battle Royale","7 bots + shrinking storm circle · win +3 🏆"],["duel","1v1 Duel","One bot, no storm · win +2 🏆"],["online","Online Free-for-all","Friends join with a code · win +3, KO +2 🏆"]];
+const MODES=[["br","Battle Royale","7 bots · storm shrinks 25 m every minute · win +3 🏆"],["duel","1v1 Duel","One bot, no storm · win +2 🏆"],["online","Online Free-for-all","Friends join with a code · win +3, KO +2 🏆"]];
 let sel="br",ftab="body";
 function renderModes(){const M=$("modes");M.innerHTML="";
  MODES.forEach(([id,n,d])=>{const b=document.createElement("button");b.className="mode"+(sel===id?" on":"");b.innerHTML=`${n}<small>${d}</small>`;b.onclick=()=>{sel=id;renderModes();openPn(null)};M.appendChild(b)});
