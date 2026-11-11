@@ -2,8 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><title>Brawl Island</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
-<title>Brawl Island</title>
- :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
 html,body{height:100%}body{margin:0;overflow:hidden;background:#14105a;color:#fff;font:15px/1.4 "Trebuchet MS","Segoe UI",system-ui,sans-serif}
 button{font:inherit;cursor:pointer;border:0;color:#fff;background:#4a5ae8;font-weight:800;padding:9px 14px;border-radius:10px}
@@ -202,8 +201,8 @@ let cars=[],pumps=[],wpk=[],chests=[],builds=[],treeM=null;
 function addObs(o){obs.push(o);const rx=o.hw!=null?o.hw:o.r,rz=o.hd!=null?o.hd:o.r;for(let i=Math.floor((o.x-rx)/CS);i<=Math.floor((o.x+rx)/CS);i++)for(let j=Math.floor((o.z-rz)/CS);j<=Math.floor((o.z+rz)/CS);j++){const k=i+","+j;let a=grid.get(k);if(!a){a=[];grid.set(k,a)}a.push(o)}}
 function kept(x,z,r){return keep.some(k=>Math.hypot(k.x-x,k.z-z)<k.r+r)}
 function near(x,z,rad){return kept(x,z,rad)||obs.some(o=>Math.hypot(o.x-x,o.z-z)<(o.hw!=null?Math.max(o.hw,o.hd)*1.42:o.r)+rad)}
-function blockedStatic(x,z,r,y){if(r==null)r=.38;const i=Math.floor(x/CS),j=Math.floor(z/CS);for(let a=i-1;a<=i+1;a++)for(let b=j-1;b<=j+1;b++){const L=grid.get(a+","+b);if(L)for(const o of L){if(o.dead||o.nb)continue;if(y!=null&&o.y1!=null&&(y>o.y1-.1||y<o.y0-1.2))continue;if(o.hw!=null){if(Math.abs(x-o.x)<o.hw+r&&Math.abs(z-o.z)<o.hd+r)return true}else if(Math.hypot(o.x-x,o.z-z)<o.r+r)return true}}return false}
-const blockedAt=(x,z,r,y)=>blockedStatic(x,z,r,y)||carBlock(x,z,r==null?.38:r);
+function blockedStatic(x,z,r,y){if(r==null)r=.32;const i=Math.floor(x/CS),j=Math.floor(z/CS);for(let a=i-1;a<=i+1;a++)for(let b=j-1;b<=j+1;b++){const L=grid.get(a+","+b);if(L)for(const o of L){if(o.dead||o.nb)continue;if(y!=null&&o.y1!=null&&(y>o.y1-.1||y<o.y0-1.2))continue;if(o.hw!=null){if(Math.abs(x-o.x)<o.hw+r&&Math.abs(z-o.z)<o.hd+r)return true}else if(Math.hypot(o.x-x,o.z-z)<o.r+r)return true}}return false}
+const blockedAt=(x,z,r,y)=>blockedStatic(x,z,r,y)||carBlock(x,z,r==null?.32:r);
 function wepMesh(id){const g=new THREE.Group(),mt=(c,r,m)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m||0}),a=(geo,m,x,y,z,rz)=>{const q=new THREE.Mesh(geo,m);q.position.set(x,y,z);if(rz)q.rotation.z=rz;q.castShadow=true;g.add(q);return q};
  if(id==="bat"){a(new THREE.CylinderGeometry(.03,.025,.3,10),mt(0x222222,.8),0,.1,0);a(new THREE.CylinderGeometry(.055,.03,.6,10),mt(0xb07a3c,.6),0,.55,0);a(new THREE.SphereGeometry(.057,10,8),mt(0xb07a3c,.6),0,.85,0)}
  else if(id==="sword"){a(new THREE.CylinderGeometry(.025,.025,.22,8),mt(0x3a2a1a,.8),0,.05,0);a(new THREE.BoxGeometry(.28,.04,.06),mt(0xc9a227,.3,.8),0,.17,0);a(new THREE.BoxGeometry(.07,.8,.012),mt(0xdfe6ee,.2,.9),0,.6,0)}
@@ -325,8 +324,8 @@ void main(){vec2 uv=wp.xz/300.0+0.5;float h=texture2D(dm,vec2(uv.x,1.0-uv.y)).r*
  [pT,...pC].forEach(q=>{q.count=np;q.instanceMatrix.needsUpdate=true;if(q.instanceColor)q.instanceColor.needsUpdate=true});[oT,...oB].forEach(q=>{q.count=no;q.instanceMatrix.needsUpdate=true;if(q.instanceColor)q.instanceColor.needsUpdate=true});
  treeM={p:[pT,...pC],o:[oT,...oB]};
  const rk=inst(new THREE.DodecahedronGeometry(1,0),new THREE.MeshStandardMaterial({color:0x8a8780,roughness:1,flatShading:true}),140);let nr=0;
- for(let i=0;i<500&&nr<140;i++){const a=rnd()*6.283,rr=Math.sqrt(rnd())*108,x=Math.cos(a)*rr,z=Math.sin(a)*rr,h=H(x,z);if(h<1.3||near(x,z,1))continue;
-  dm.position.set(x,h+.1,z);dm.scale.set(.5+rnd()*1.2,.3+rnd()*.6,.5+rnd()*1.2);dm.rotation.set(rnd(),rnd()*6,rnd());dm.updateMatrix();rk.setMatrixAt(nr++,dm.matrix);addObs({x,z,r:Math.max(dm.scale.x,dm.scale.z)*.8})}
+ for(let i=0;i<500&&nr<140;i++){const a=rnd()*6.283,rr=Math.sqrt(rnd())*108,x=Math.cos(a)*rr,z=Math.sin(a)*rr,h=H(x,z);if(h<1.3||near(x,z,1.7))continue;
+  dm.position.set(x,h+.1,z);dm.scale.set(.5+rnd()*1.2,.3+rnd()*.6,.5+rnd()*1.2);dm.rotation.set(rnd(),rnd()*6,rnd());dm.updateMatrix();rk.setMatrixAt(nr++,dm.matrix);addObs({x,z,r:(dm.scale.x+dm.scale.z)/2*.85})}
  rk.count=nr;
  const gm2=new THREE.MeshStandardMaterial({roughness:1});sway(gm2,.09,"(position.y+0.3)*1.6");const gr=inst(new THREE.ConeGeometry(.07,.55,3),gm2,2600,false);let ng=0;
  for(let i=0;i<5000&&ng<(TOUCH?1000:2600);i++){const a=rnd()*6.283,rr=Math.sqrt(rnd())*105,x=Math.cos(a)*rr,z=Math.sin(a)*rr,h=H(x,z);if(h<1.4||h>6||blockedAt(x,z)||kept(x,z,0)||pd(x,z)<1.8)continue;
@@ -353,7 +352,10 @@ const SP=()=>{const[x,z]=spawn();return[x,z]};
 let me=mkF(...SP()),bots=[],remotes=new Map(),proj=[],orbs=[],mode=null,rm=null,myPeer=null,over=0,lastSend=0,rt=0,yaw=0,pitch=.4,drag=0,stR=140,earned=0;
 const others=()=>[...bots,...remotes.values()].filter(f=>f.hp>0&&!(f.dropT>0));
 function carBlock(x,z,r,ex){for(const c of cars){if(c===ex)continue;const dx=x-c.x,dz=z-c.z,co=Math.cos(c.ang),si=Math.sin(c.ang),lx=dx*co+dz*si,lz=-dx*si+dz*co;if(Math.abs(lx)<2.1+r&&Math.abs(lz)<.95+r)return true}return false}
-function move(f,dx,dz){const ok=(x,z)=>H(x,z)>-3.2&&!blockedAt(x,z,undefined,f.y);if(ok(f.x+dx,f.z+dz)){f.x+=dx;f.z+=dz}else if(ok(f.x+dx,f.z))f.x+=dx;else if(ok(f.x,f.z+dz))f.z+=dz}
+function move(f,dx,dz){const ok=(x,z)=>H(x,z)>-3.2&&!blockedAt(x,z,undefined,f.y);if(ok(f.x+dx,f.z+dz)){f.x+=dx;f.z+=dz;return}
+ if(Math.hypot(dx,dz)<1e-6)return;
+ for(const a of[.35,-.35,.7,-.7,1.05,-1.05,1.45,-1.45]){const c=Math.cos(a),s=Math.sin(a),k=Math.abs(a)<.8?1:.75,nx=(dx*c-dz*s)*k,nz=(dx*s+dz*c)*k;if(ok(f.x+nx,f.z+nz)){f.x+=nx;f.z+=nz;return}}
+ if(ok(f.x+dx,f.z))f.x+=dx;else if(ok(f.x,f.z+dz))f.z+=dz}
 function phys(f,dt){const hh=H(f.x,f.z),h=GY(f.x,f.z,f.y);f.swim=hh<-.55&&h<hh+.2;
  if(f.swim){f.y+=(-.2-f.y)*Math.min(1,dt*8);f.vy=0}else{f.vy-=18*dt;f.y+=f.vy*dt;if(f.y<h){f.y=h;f.vy=0}}
  move(f,f.vx*dt,f.vz*dt);f.vx*=.88;f.vz*=.88;f.stun-=dt}
@@ -667,7 +669,9 @@ function pose(F,f,dt,isMe){
  const J={ll:w+.3*g,rl:-w-.3*g,ll2:-Math.max(0,cs)*.9*k-.25*g,rl2:-Math.max(0,-cs)*.9*k-.25*g,la:L(-w*.8,.55,g),ra:L(w*.8,1.25,g),la2:L(.4+.5*run,2.5,g),ra2:L(.4+.5*run,.65,g),ix:-.08*k-.12*run-.08*g,iy:Math.sin(T*.5+F.id)*.05*g-.2*g,
   ipy:Math.sin(T*2.2+F.ph)*.012+(k>.2?Math.abs(sn)*.03:0)-.1*ls-.1*g,ipx:0,hz:0,hy:Math.sin(T*.7+F.id)*.3*g};
  if(ls>0){J.ll2-=.9*ls;J.rl2-=.9*ls;J.ll+=.5*ls;J.rl+=.5*ls}
- if(air){const up=f.vy>0;J.ll=.5;J.rl=-.3;J.ll2=-.9;J.rl2=-.5;J.la=J.ra=up?2.2:1;J.la2=J.ra2=.6;J.ix=-.12}
+ if(air){const up=f.vy>0,fl=Math.sin(T*14+F.id);
+  if(up){J.la=J.ra=2.5;J.la2=J.ra2=.5;J.ll=.9;J.rl=.2;J.ll2=-1.3;J.rl2=-.6;J.ix=-.15}
+  else{J.la=1.9+fl*.7;J.ra=1.9-fl*.7;J.la2=J.ra2=.7+Math.abs(fl)*.5;J.ll=.5+fl*.5;J.rl=.5-fl*.5;J.ll2=-.7-Math.max(0,fl)*.5;J.rl2=-.7-Math.max(0,-fl)*.5;J.ix=.1;J.hz=-.15}}
  const W=f.wep&&WEAPONS[f.wep];
  if(W&&!c){if(W.gun){J.la=1.3;J.la2=.5;J.ra=1.5;J.ra2=.05;J.iy=-.2;if(f.aim>.5)J.ra+=.25}else{J.ra=.6;J.ra2=1.1}}
  if(c==="punch"){J.ra=.3+1.25*e;J.ra2=1.7*(1-e);J.iy=-.4*e}
@@ -692,7 +696,7 @@ function pose(F,f,dt,isMe){
  if(sw){J.ix=-1.35;J.ipx=-.85;J.ipy=-.05;J.ll=Math.sin(F.ph*2)*.45;J.rl=-J.ll;J.ll2=J.rl2=-.15;J.hy=Math.sin(F.ph)*.7;J.hz=-.2}
  if(f.dr===2){J.ix=-1.45;J.ipx=-.85;J.ipy=-.05;J.la=J.ra=2.2;J.la2=J.ra2=.3;J.ll=.3;J.rl=-.3;J.ll2=J.rl2=-.2}else if(f.dr===3){J.la=J.ra=2.9;J.la2=J.ra2=.1;J.ll=.2;J.rl=-.1;J.ll2=J.rl2=-.2;J.ix=0;J.iy=0}
  if(f.hp<=0){F.dp=Math.min(1,F.dp+dt*2.2);const ez=1-Math.pow(1-F.dp,3);J.ix=1.5*ez*(f.dk||1);J.ipy=-.05*ez;J.la=J.ra=.3;J.la2=J.ra2=.2;J.ll=J.rl=.1;J.ll2=J.rl2=-.1;J.ipx=0}else F.dp=0;
- const a=1-Math.exp(-dt*((c||em||F.land>0)?26:14)),ap=(o,p,v)=>{o.rotation[p]+=(v-o.rotation[p])*a};
+ const a=1-Math.exp(-dt*((c||em||F.land>0||air)?26:14)),ap=(o,p,v)=>{o.rotation[p]+=(v-o.rotation[p])*a};
  ap(F.ll,"z",J.ll);ap(F.rl,"z",J.rl);ap(F.ll2,"z",J.ll2);ap(F.rl2,"z",J.rl2);ap(F.la,"z",J.la);ap(F.ra,"z",J.ra);ap(F.la2,"z",J.la2);ap(F.ra2,"z",J.ra2);
  ap(F.i,"z",J.ix);ap(F.i,"y",J.iy);ap(F.hd,"z",J.hz-F.i.rotation.z*.5);ap(F.hd,"y",J.hy);
  F.i.position.y+=(J.ipy-F.i.position.y)*a;F.i.position.x+=(J.ipx-F.i.position.x)*a;
